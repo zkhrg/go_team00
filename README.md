@@ -1,4 +1,4 @@
-# Rush 00 - Go Piscine
+# Team 00 - Go Intensive
 
 ## Randomaliens
 
