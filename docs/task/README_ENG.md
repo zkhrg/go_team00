@@ -27,7 +27,7 @@
 - Your programs should not quit unexpectedly (giving an error on a valid input). If this happens, your project will be considered non functional and will receive a 0 during the evaluation.
 - We encourage you to create test programs for your project even though this work won't have to be submitted and won't be graded. It will give you a chance to easily test your work and your peers' work. You will find those tests especially useful during your defence. Indeed, during defence, you are free to use your tests and/or the tests of the peer you are evaluating.
 - Submit your work to your assigned git repository. Only the work in the git repository will be graded.
-- If your code is using external dependencies, it should use [Go Modules](https://go.dev/blog/using-go-modules) for managing them
+- If your code is using external dependencies, it should use [Go Modules](https:
 
 <h2 id="chapter-ii" >Chapter II</h2>
 <h2 id="rules-of-the-day" >Rules of the day</h2>
@@ -72,7 +72,7 @@ And then the radio turned on one more time. And the thing Louise heard made her 
 
 She showed a basic schema of data types. Looks like each message consists of just three fields - 'session_id' as a string, 'frequency' as a double and also a current timestamp in UTC.
 
-We don't know much about distribution here, so let's implement it in such way that whenever new client connects [expected value](https://en.wikipedia.org/wiki/Expected_value) and [standard deviation](https://en.wikipedia.org/wiki/Standard_deviation)" are picked at random. For this experiment, let's pick mean from [-10, 10] interval and standard deviation from [0.3, 1.5].
+We don't know much about distribution here, so let's implement it in such way that whenever new client connects [expected value](https:
 
 On each new connection server should generate a random UUID (sent as session_id) and new random values for mean and STD. All generated values should be written to a server log (stdout or file). After that it should send a stream of entries with fields explained above, where for each message 'frequency' would be a value picked at random (sampled) from a normal distribution with these standard deviation and expected value.
 
@@ -120,10 +120,10 @@ If Louise is right, these anomalies could be the key to a first contact with the
 <h2 id="chapter-viii" >Chapter VIII</h2>
 <h3 id="reading">Reading</h3>
 
-[Normal distribution](https://en.wikipedia.org/wiki/Normal_distribution)
-[68-95-99.7 rule](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule)
-[SQL Injections](https://en.wikipedia.org/wiki/SQL_injection)
-[go-pg](https://github.com/go-pg/pg)
-[GORM](https://gorm.io/index.html)
+[Normal distribution](https:
+[68-95-99.7 rule](https:
+[SQL Injections](https:
+[go-pg](https:
+[GORM](https:
 
 

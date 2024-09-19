@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package datastream;
+
+option go_package = "pkg/api/pb"; 
+
+message DataMessage {
+    string session_id = 1;
+    double frequency = 2;
+    double current_timestamp = 3;
+}
+
+service DataStream {
+    rpc StreamData (StreamRequest) returns (stream DataMessage);
+}
+
+message StreamRequest {
+    
+}
