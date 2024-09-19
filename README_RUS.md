@@ -11,13 +11,13 @@
 3. [Глава III](#chapter-iii) \
     3.1. [Intro](#intro)
 4. [Глава IV](#chapter-iv) \
-    4.1. [Task 00: Transmitter](#exercise-00-transmitter)
+    4.1. [Задача 00: Передатчик](#exercise-00-transmitter)
 5. [Глава V](#chapter-v) \
-    5.1. [Task 01: Anomaly Detection](#exercise-01-anomaly-detection)
+    5.1. [Задача 01: Выявление аномалий](#exercise-01-anomaly-detection)
 6. [Глава VI](#chapter-vi) \
-    6.1. [Task 02: Report](#exercise-02-report)
+    6.1. [Задача 02: Отчет](#exercise-02-report)
 7. [Глава VII](#chapter-vii) \
-    7.1. [Task 03: All Together](#exercise-03-all-together)
+    7.1. [Задача 03: Все вместе](#exercise-03-all-together)
 8. [Глава VIII](#chapter-viii) \
     8.1. [Reading](#reading)
 
@@ -63,62 +63,65 @@
 
 И затем радиоприемным включился еще раз. И вещь, услышанная Луизой зажгло ее глаза энтузиазмом. Она глянула на команду и сказала еще одну вещь громким, триумфальным шепетом:
 
-"Я думаю я знаю что делать! ЭТО ЖЕ НОРМАЛЬНОЕ РА`СПРЕДЕЛЕНИЕ!"
+"Я думаю я знаю что делать! ЭТО ЖЕ НОРМАЛЬНОЕ РАСПРЕДЕЛЕНИЕ!"
 
 <h2 id="chapter-iv" >Глава IV</h2>
-<h3 id="ex00">Task 00: Transmitter</h3>
+<h3 id="ex00">Задача 00: Передатчик</h3>
 
-"So, we have to reimplement this military device's protocol on our own." - Louise said. - "I've already mentioned that it uses gRPC, so let's do that."
+"Так, нам но надо переписать этот проток военного девайся на наш собственный." - Сказала Луиза. - "Я уже отметила что он использует gRPC, так давайте сделаем это."
 
-She showed a basic schema of data types. Looks like each message consists of just three fields - 'session_id' as a string, 'frequency' as a double and also a current timestamp in UTC.
+Она показала базовую схему типов данных. Выглядит так, что каждое сообщение содержит всего три поля:
+* `session_id` строкового типа
+* `frequency` как число с плавающей точкой двойной точности
+* `current_timestamp` текущее число в UTC, как число с плавающей точкой двойной точности
 
-We don't know much about distribution here, so let's implement it in such way that whenever new client connects [expected value](https://en.wikipedia.org/wiki/Expected_value) and [standard deviation](https://en.wikipedia.org/wiki/Standard_deviation)" are picked at random. For this experiment, let's pick mean from [-10, 10] interval and standard deviation from [0.3, 1.5].
+Мы здесь мало что знаем о распределении, поэтому давайте реализуем это таким образом, чтобы всякий раз, когда новый клиент подключается, [ожидаемое значение](https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5_%D0%BE%D0%B6%D0%B8%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5) и [стандартное отклонение](https://en.wikipedia.org/wiki/Standard_deviation)" выбирались случайным образом. Для этого эксперимента давайте выберем среднее значение из интервала [-10, 10] и стандартное отклонение от [0,3, 1,5].
 
-On each new connection server should generate a random UUID (sent as session_id) and new random values for mean and STD. All generated values should be written to a server log (stdout or file). After that it should send a stream of entries with fields explained above, where for each message 'frequency' would be a value picked at random (sampled) from a normal distribution with these standard deviation and expected value.
+На каждое новое соединение сервера должно генерироваться случайное UUID (отправляется как session_id) и новые случайное для среднего и стандартного отклонения. Все сгенерированные значения должны быть записаны в журнал(логи) сервера (стандартный поток вывода или в файл). После этого это должно отправлять поток сущностей, с полями описанными выше, где каждое сообщение в поле 'частота' будет иметь значение выбранное случайно из нормального распределения с этим стандартным отклонением ожидаемого значения.
 
-It is required to describe the schema in a *.proto* file and generate the code itself from it. Also, you shouldn't modify generated code manually, just import it.
+Все это требуется описать в схеме в `.proto` файле и генеровать код из него. Так же ты не должен модифицировать код вручную, просто импортируй его.
 
 <h2 id="chapter-v" >Глава V</h2>
-<h3 id="ex01">Task 01: Anomaly Detection</h3>
+<h3 id="ex01">Задача 01: Выявление аномалий</h3>
 
-"Now to the interesting part! While others are working on gRPC server, let's think of a client. I expect that gRPC client should be handled by the same guys writing the server to test it, so let's focus on a different thing. We need to detect anomalies in a frequency distribution!"
+"Теперь перейдем к интересной части! Пока другие работают над gRPC-сервером, давайте подумаем о клиенте. Я полагаю, что с gRPC-клиентом должны работать те же ребята, которые пишут сервер для его тестирования, так что давайте сосредоточимся на другом. Нам нужно обнаружить аномалии в распределении частот!"
 
-So, you know you're getting a stream of values. With each new incoming entry from a stream your code should be able to approximate mean and STD from the random distribution generated on a server. Of course it's not really possible to predict it looking only on 3-5 values, but after 50-100 it should be precise enough. Keep in mind that mean and STD are generated for each new connection, so you shouldn't restart the client during the process. Also, values shouldn't keep piling up in memory, so you may consider using sync.Pool for easy reuse.
+Итак, вы знаете, что получаете поток значений. С каждой новой входящей записью из потока ваш код должен иметь возможность аппроксимировать среднее значение и стандартное значение из случайного распределения, сгенерированного на сервере. Конечно, на самом деле невозможно предсказать это, основываясь только на 3-5 значениях, но после 50-100 это должно быть достаточно точно. Имейте в виду, что mean и STD генерируются для каждого нового подключения, поэтому вам не следует перезапускать клиент во время процесса. Кроме того, значения не должны постоянно накапливаться в памяти, поэтому вы можете рассмотреть возможность использования sync.Пул для удобства повторного использования.
 
-While working on this task, you can temporarily forget about gRPC and test the code by just sending it a sequence of values to stdin.
+Во время работы над этой задачей вы можете временно забыть о gRPC и протестировать код, просто отправив ему последовательность значений в stdin.
 
-Your client code should write into a log periodically, how many values are processed so far as well as predicted values of mean and STD.
+Ваш клиентский код должен периодически записывать в журнал, сколько значений обработано на данный момент, а также прогнозируемые значения mean и STD.
 
-After some time, when your client decides that the predicted distribution parameters are good enough (feel free to choose this moment by yourself), it should switch automatically into an Anomaly Detection stage. Here there is one more parameter which comes into play - an *STD anomaly coefficient*. So, your client should accept a command-line parameter (let it be '-k') with a float-typed coefficient.
+Через некоторое время, когда ваш клиент решит, что прогнозируемые параметры распределения достаточно хороши (не стесняйтесь выбирать этот момент самостоятельно), он должен автоматически перейти в стадию обнаружения аномалий. Здесь в игру вступает еще один параметр - *Коэффициент аномалий STD*. Итак, ваш клиент должен принять параметр командной строки (пусть это будет '-k') с коэффициентом с плавающей запятой.
 
-An incoming frequency is considered an anomaly, if it differs from the expected value by more than *k \* STD* to any side (to the left or to the right, as the distribution is symmetric). You can read more about how it works by following links from Глава 4.
+Входящая частота считается аномалией, если она отличается от ожидаемого значения более чем на *k \* STD* в любую сторону (влево или вправо, поскольку распределение симметрично). Вы можете прочитать больше о том, как это работает, перейдя по ссылкам из Главы 4.
 
-For now you should just write found anomalies into a log.
+На данный момент вам следует просто записывать найденные аномалии в журнал.
 
 <h2 id="chapter-vi" >Глава VI</h2>
-<h3 id="ex02">Task 02: Report</h3>
+<h3 id="ex02">Задача 02: Отчет</h3>
 
-"As general knows nothing about our *sciency gizmo*, let's store all anomalies that we encounter in a database and then he'll be able to look at it through some interface they have" - Louise seems to be a lot more concerned about the data rather than the general.
+"Поскольку генерал ничего не знает о нашей научной штуковине, давайте сохраним все аномалии, с которыми мы сталкиваемся, в базе данных, и тогда он сможет просмотреть их через какой-нибудь интерфейс, который у них есть", - Луизу, похоже, гораздо больше волнуют данные, а не генерал.
 
-So, let's learn how to write data entries to PostgreSQL. Usually it is considered a bad practice to just write plain SQL queries in code when dealing with highly secure environments (you can read about SQL Injections by following links from Глава 4). Let's use an ORM. In case of PostgreSQL there are two most obvious choices (these links are below as well), but you can choose any other. The main idea here is to not have any strings with SQL code in your sources.
+Итак, давайте узнаем, как записывать данные в PostgreSQL. Обычно считается плохой практикой просто писать простые SQL-запросы в коде, когда имеешь дело с высокозащищенными средами (вы можете прочитать о SQL-инъекциях, перейдя по ссылкам из Главы 4). Давайте воспользуемся ORM. В случае с PostgreSQL есть два наиболее очевидных варианта (эти ссылки также приведены ниже), но вы можете выбрать любой другой. Основная идея здесь заключается в том, чтобы в ваших исходных текстах не было строк с SQL-кодом.
 
-You'll have to describe your entry (session_id, frequency and a timestamp) as a structure in Go and then use it together with ORM to map it into database columns.
+Вам нужно будет описать свою запись (session_id, частоту и временную метку) как структуру в Go, а затем использовать ее вместе с ORM для отображения в столбцах базы данных.
 
 <h2 id="chapter-vii" >Глава VII</h2>
-<h3 id="ex03">Task 03: All Together</h3>
+<h3 id="ex03">Задача 03: Все вместе</h3>
 
-Okay, so when we have a transmitter, receiver, anomaly detection and ORM, we can plug things into one another and merge them into a full project.
+Итак, когда у нас есть передатчик, приемник, система обнаружения аномалий и ORM, мы можем подключить их друг к другу и объединить в полноценный проект.
 
-So, if you start a server and a client (PostgreSQL should be already running on your machine), your client will connect to a server and get a stream of entries which it will then:
+Итак, если вы запустите сервер и клиент (PostgreSQL должен быть уже запущен на вашем компьютере), ваш клиент подключится к серверу и получит поток записей, которые он затем будет использовать:
 
-- First, use for a distribution reconstruction (mean/STD)
-- Second, after some time start detecting anomalies based on supplied STD anomaly coefficient (I suggest you pick it big enough for this experiment, so anomalies wouldn't happen too frequently)
-- Third, all anomalies should be written into a database in PostgreSQL using ORM
+* Сначала для восстановления распределения (mean/STD)
+* Во-вторых, через некоторое время начните обнаруживать аномалии на основе указанного коэффициента аномалий STD (я предлагаю вам выбрать его достаточно большим для этого эксперимента, чтобы аномалии случались не слишком часто).
+* В-третьих, все аномалии должны быть записаны в базу данных в PostgreSQL с использованием ORM
 
-If Louise is right, these anomalies could be the key to a first contact with the aliens. But it is also a pretty direct approach for cases when you need to detect anomalies on a stream of data, which Go can be efficiently used for.
+Если Луиза права, эти аномалии могут быть ключом к первому контакту с инопланетянами. Но это также довольно простой подход для случаев, когда вам нужно обнаружить аномалии в потоке данных, для чего можно эффективно использовать Go.
 
 <h2 id="chapter-viii" >Глава VIII</h2>
-<h3 id="reading">Reading</h3>
+<h3 id="reading">Список литературы</h3>
 
 [Normal distribution](https://en.wikipedia.org/wiki/Normal_distribution) <br>
 [68-95-99.7 rule](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule) <br>
