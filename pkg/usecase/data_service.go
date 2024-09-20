@@ -32,14 +32,20 @@ func (s *DataService) StreamData(req *pb.StreamRequest, stream pb.DataStream_Str
 		frequency := rng.NormFloat64()*stdDev + expectedValue
 		currentTimestamp := float64(time.Now().UTC().Unix())
 
+		// Попытка отправить сообщение клиенту
 		if err := stream.Send(&pb.DataMessage{
 			SessionId:        sessionID,
 			Frequency:        frequency,
 			CurrentTimestamp: currentTimestamp,
 		}); err != nil {
+			// Логирование ошибки разрыва соединения
+			log.Printf("Failed to send data to client. Session ID: %s, Error: %v", sessionID, err)
+
+			// Завершаем стрим в случае разрыва соединения
 			return err
 		}
 
-		time.Sleep(1 * time.Second)
+		// Задержка между отправкой сообщений
+		time.Sleep(50 * time.Millisecond)
 	}
 }

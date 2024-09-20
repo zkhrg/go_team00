@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	pb "github.com/zkhrg/go_team00/pkg/api/pb"
@@ -11,7 +12,6 @@ import (
 )
 
 func main() {
-
 	conn, err := grpc.NewClient(
 		"localhost:50051",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -28,5 +28,27 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error while calling StreamData: %v", err)
 	}
-	log.Printf("Response: %v", resp)
+
+	msg, err := resp.Recv()
+	if err != nil {
+		log.Fatalf("Error while calling Recv: %v", err)
+	}
+	fmt.Printf(
+		"received first message | session:  %s | timestamp: %f | frequency: %f\n",
+		msg.GetSessionId(),
+		msg.GetCurrentTimestamp(),
+		msg.GetFrequency(),
+	)
+
+	for {
+		msg, err = resp.Recv()
+		if err != nil {
+			log.Fatalf("Error while receiving msg from server")
+		}
+		fmt.Printf(
+			"timestamp: %f | frequency: %f\n",
+			msg.GetCurrentTimestamp(),
+			msg.GetFrequency(),
+		)
+	}
 }

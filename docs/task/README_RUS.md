@@ -123,10 +123,10 @@
 <h2 id="chapter-viii" >Глава VIII</h2>
 <h3 id="reading">Список литературы</h3>
 
-[Normal distribution](https:
-[68-95-99.7 rule](https:
-[SQL Injections](https:
-[go-pg](https:
-[GORM](https:
+[Normal distribution](https:) <br>
+[68-95-99.7 rule](https:) <br>
+[SQL Injections](https:) <br>
+[go-pg](https:) <br>
+[GORM](https:) <br>
 
 
