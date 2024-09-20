@@ -46,6 +46,6 @@ func (s *DataService) StreamData(req *pb.StreamRequest, stream pb.DataStream_Str
 		}
 
 		// Задержка между отправкой сообщений
-		time.Sleep(50 * time.Millisecond)
+		time.Sleep(200 * time.Millisecond)
 	}
 }

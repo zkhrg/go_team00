@@ -1,7 +1,8 @@
-package detector
+package usecase
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"sync"
 )
@@ -18,6 +19,7 @@ type AnomaliesDetector struct {
 	anomalyCoefficient             float64
 	initValues                     []float64
 	freqCountToCalculateParameters uint64
+	anomServ                       *AnomalyService
 }
 
 func (a *AnomaliesDetector) InitCalculateMeanSD(freq float64) bool {
@@ -60,7 +62,8 @@ func (a *AnomaliesDetector) ProcessNextFrequency(freq float64) {
 	a.Sd = math.Sqrt(a.sumForSD / float64(a.CountRecords))
 
 	if math.Abs(freq-a.Mean) > a.anomalyCoefficient*a.Sd {
-		fmt.Printf("Found anomaly: %.4f\n", freq)
+		log.Printf("Found anomaly: %.4f\n", freq)
+		a.anomServ.StoreAnomaly(a.SessionID, freq)
 		a.CountAnomalies++
 	}
 }
@@ -84,9 +87,11 @@ func (a *AnomaliesDetector) DetectAnomalies(freqChan chan float64) {
 	}()
 }
 
-func NewAnomaliesDetector(anomalyCoefficient float64, freqCountToCalculateParameters uint64) *AnomaliesDetector {
+func NewAnomaliesDetector(anomalyCoefficient float64, freqCountToCalculateParameters uint64, anomServ *AnomalyService, sessionID string) *AnomaliesDetector {
 	return &AnomaliesDetector{
 		anomalyCoefficient:             anomalyCoefficient,
 		freqCountToCalculateParameters: freqCountToCalculateParameters,
+		anomServ:                       anomServ,
+		SessionID:                      sessionID,
 	}
 }
