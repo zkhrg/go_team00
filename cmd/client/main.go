@@ -30,7 +30,7 @@ func main() {
 	}
 
 	conn, err := grpc.NewClient(
-		"localhost:50051",
+		"data-stream-server:50051",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -78,8 +78,11 @@ func main() {
 }
 
 func Detecting(freqChan chan float64, anomalyCoefficient float64, sessionID string) {
-	dsn := "host=localhost user=a password=a dbname=a port=6666 sslmode=disable"
-
+	// dsn := "host=localhost user=postgres password=postgres dbname=school21 port=5432 sslmode=disable"
+	dsn := os.Getenv("POSTGRES_CONN")
+	if dsn == "" {
+		log.Fatal("POSTGRES_CONN environment variable is not set")
+	}
 	// Подключение к базе данных
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
