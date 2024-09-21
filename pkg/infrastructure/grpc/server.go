@@ -5,13 +5,14 @@ import (
 	"net"
 
 	pb "github.com/zkhrg/go_team00/pkg/api/pb"
+	"github.com/zkhrg/go_team00/pkg/config"
 	"github.com/zkhrg/go_team00/pkg/usecase"
 
 	"google.golang.org/grpc"
 )
 
-func RunGRPCServer(dataService *usecase.DataService) {
-	lis, err := net.Listen("tcp", ":50051")
+func RunGRPCServer(cfg config.Config, dataService *usecase.DataService) {
+	lis, err := net.Listen(cfg.GRPCProt, cfg.GRPCPort)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -20,7 +21,7 @@ func RunGRPCServer(dataService *usecase.DataService) {
 
 	pb.RegisterDataStreamServer(grpcServer, dataService)
 
-	log.Println("gRPC server is running on port :50051...")
+	log.Printf("gRPC server is running on port %s", cfg.GRPCPort)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
